@@ -107,3 +107,17 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/product-api:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/product-api:${{ github.sha }}
+    deploy:
+    needs: build-and-test
+    runs-on: [self-hosted, Windows, X64]
+
+    steps:
+
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Pull latest Docker image
+        run: docker pull anhviplay/product-api:latest
+      - name: Deploy to Local Docker Engine
+        run: docker compose -f docker-compose-prod.yaml up -d
+      - name: Check deployed containers
+        run: docker ps
